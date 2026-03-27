@@ -1,34 +1,25 @@
 from fastapi import FastAPI
-import uvicorn
-import pandas as pd
+from app.routes.csv_routes import router as csv_router
+from app.routes.db_routes import router as db_router
+from app.db.database import Base, engine
 
-app = FastAPI()
+# Create tables on startup
+Base.metadata.create_all(bind=engine)
 
-@app.get("/")
-async def home():
-    return {"message": "Welcome to CSV TO FASTAPI APPLICATION."}
+app = FastAPI(
+    title="CSV to FastAPI",
+    description=(
+        "FastAPI service that loads student data from a CSV, "
+        "stores it in MySQL, and exposes filtered query endpoints."
+    )
+)
 
-@app.get("/get-csv-data")
-def get_csv_data():
+app.include_router(csv_router)
+app.include_router(db_router)
 
-    try:
-        df = pd.read_csv("students_complete.csv")
 
-        return {
-            "columns": list(df.columns),
-            "total_rows": len(df),
-            "data": df.fillna("").to_dict(orient="records")
-        }
-
-    except FileNotFoundError:
-        return {
-            "error": "students_complete.csv not found.(it should be in the working directory)"
-        }
-
-    except Exception as e:
-        return {
-            "error": str(e)
-        }
-
-if __name__ == "__main__":
-    uvicorn.run(app)
+@app.get("/", tags=["Root"])
+def root():
+    return {
+        "message": "CSV to FastAPI API"
+    }
