@@ -2,8 +2,12 @@ import pandas as pd
 import math
 from typing import Optional
 from functools import lru_cache
+from dotenv import load_dotenv
+import os
 
-CSV_PATH = "data/students_complete.csv"
+load_dotenv()
+
+CSV_PATH = os.getenv("CSV_PATH")
 
 
 @lru_cache(maxsize=1)

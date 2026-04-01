@@ -17,7 +17,6 @@ app = FastAPI(
 app.include_router(csv_router)
 app.include_router(db_router)
 
-
 @app.get("/", tags=["Root"])
 def root():
     return {

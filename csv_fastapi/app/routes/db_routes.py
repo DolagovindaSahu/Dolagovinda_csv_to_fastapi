@@ -22,13 +22,11 @@ def check_db():
         raise HTTPException(status_code=503, detail=result)
     return result
 
-
 # ── Seed ─────────────────────────────────────────────────────────────────────
 
 @router.post("/db/seed", summary="Insert CSV data into DB")
 def seed_db(db: Session = Depends(get_db)):
     return seed_from_csv(db)
-
 
 # ── Query from DB ─────────────────────────────────────────────────────────────
 
@@ -61,13 +59,13 @@ def get_students(
     students = get_students_filtered(db, filters)
     return students
 
-
 @router.get(
     "/db/students/{student_id}",
     response_model=StudentSchema,
     summary="Get a single student from DB by student_id",
 )
 def get_student(student_id: str, db: Session = Depends(get_db)):
+    student_id = student_id.strip().upper()
     student = get_student_by_id_db(db, student_id)
     if not student:
         raise HTTPException(status_code=404, detail=f"Student '{student_id}' not found in DB")
