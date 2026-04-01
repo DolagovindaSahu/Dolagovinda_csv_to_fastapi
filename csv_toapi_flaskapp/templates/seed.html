@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Seed Data — Student Portal{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-semibold text-gray-900">Seed Data</h1>
+  <p class="text-sm text-gray-500 mt-1">Load student records from CSV into the MySQL database</p>
+</div>
+
+<div class="max-w-xl space-y-4">
+
+  <!-- DB Status -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 pb-3 border-b border-gray-100">Database Status</div>
+    <div class="flex items-center gap-3">
+      <div class="w-2.5 h-2.5 rounded-full {{ 'bg-emerald-500' if db_status == 'connected' else 'bg-red-400' }}"></div>
+      <span class="text-sm font-medium text-gray-700">
+        {{ 'Connected to MySQL' if db_status == 'connected' else 'Database not reachable' }}
+      </span>
+    </div>
+    {% if db_status != 'connected' %}
+    <p class="text-xs text-gray-400 mt-2">Make sure FastAPI is running and .env credentials are correct.</p>
+    {% endif %}
+  </div>
+
+  <!-- Seed Action -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 pb-3 border-b border-gray-100">Load CSV into Database</div>
+    <p class="text-sm text-gray-500 mb-5 leading-relaxed">
+      Reads <code class="text-xs bg-gray-100 text-red-600 px-1.5 py-0.5 rounded">students_complete.csv</code>
+      and inserts all rows into the
+      <code class="text-xs bg-gray-100 text-red-600 px-1.5 py-0.5 rounded">students</code>
+      table. Already-existing student IDs are skipped — safe to run multiple times.
+    </p>
+    {% if db_status == 'connected' %}
+    <form method="POST" action="{{ url_for('seed') }}">
+      <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+        Run Seed
+      </button>
+    </form>
+    {% else %}
+    <button disabled class="px-5 py-2 bg-indigo-200 text-white text-sm font-medium rounded-lg cursor-not-allowed">
+      Run Seed
+    </button>
+    {% endif %}
+  </div>
+
+  <!-- How it works -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 pb-3 border-b border-gray-100">How It Works</div>
+    <ol class="space-y-2">
+      {% for step in [
+        ('Flask calls', 'POST /db/seed', 'on the FastAPI backend'),
+        ('FastAPI reads the CSV file using', 'pandas', ''),
+        ('Each row is checked — if the', 'student_id', 'already exists, it is skipped'),
+        ('New rows are inserted into the MySQL', 'students', 'table'),
+        ('The flash message shows how many were inserted vs skipped', '', '')
+      ] %}
+      <li class="flex gap-3 text-sm text-gray-500">
+        <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ loop.index }}</span>
+        <span>{{ step[0] }} {% if step[1] %}<code class="text-xs bg-gray-100 text-red-600 px-1.5 py-0.5 rounded">{{ step[1] }}</code>{% endif %} {{ step[2] }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Error — Student Portal{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center py-24 text-center">
+  <div class="text-6xl mb-6">⚠️</div>
+  <h2 class="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
+  <p class="text-sm text-gray-500 max-w-md mb-8">{{ message }}</p>
+  <div class="flex gap-3">
+    <a href="{{ url_for('dashboard') }}" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">Go to Dashboard</a>
+    <a href="http://localhost:8000/docs" target="_blank" class="px-5 py-2 border border-gray-200 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">Check FastAPI →</a>
+  </div>
+</div>
+{% endblock %}
